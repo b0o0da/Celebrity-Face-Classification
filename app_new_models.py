@@ -17,7 +17,7 @@ models = {
     "CNN From Scratch": r"C:\deployment\Best_Model_CNN_From_Scratch.h5",
     "CNN DenseNet169": r"C:\deployment\Best_Model_DenseNet169.h5",
     "CNN ResNet152V2": r"C:\deployment\Best_Model_ResNet152V2_reg.h5",
-    "CNN VGG16": r"C:\deployment\92% VGG16.h5",
+    "CNN VGG16": r"C:\deployment\VGG16_92.h5",
     "CNN Xception": r"C:\deployment\Best_Model_Xception_reg.h5"
 }
 
