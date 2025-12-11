@@ -1,7 +1,5 @@
 import streamlit as st
 import numpy as np
-
-from tensorflow.keras.preprocessing import image
 from PIL import Image
 import pandas as pd
 import tensorflow as tf
@@ -17,14 +15,14 @@ if "predicted" not in st.session_state:
 # Paths
 # ===========================
 h5_models = {
-    "CNN From Scratch": r"deployment\Best_Model_CNN_From_Scratch.h5",
-    "CNN DenseNet169": r"deployment\Best_Model_DenseNet169.h5",
-    "CNN ResNet152V2": r"deployment\Best_Model_ResNet152V2_reg.h5",
-    "CNN VGG16": r"deployment\VGG16_92.h5",
-    "CNN Xception": r"deployment\Best_Model_Xception_reg.h5"
+    "CNN From Scratch": r"deployment/Best_Model_CNN_From_Scratch.h5",
+    "CNN DenseNet169": r"deployment/Best_Model_DenseNet169.h5",
+    "CNN ResNet152V2": r"deployment/Best_Model_ResNet152V2_reg.h5",
+    "CNN VGG16": r"deployment/VGG16_92.h5",
+    "CNN Xception": r"deployment/Best_Model_Xception_reg.h5"
 }
 
-tflite_folder = r"deployment\models"
+tflite_folder = r"deployment/models"
 os.makedirs(tflite_folder, exist_ok=True)
 
 # ===========================
@@ -62,6 +60,12 @@ loaded_models = {name: load_tflite_model(path) for name, path in tflite_models.i
 class_names = ["Alexgender", "Amitab Bachchan", "Billie Eilish", "Brad Pitt", "Camila Cabello"]
 
 # ===========================
+# Helper function to convert PIL image to array
+# ===========================
+def img_to_array(img):
+    return np.array(img, dtype=np.float32)
+
+# ===========================
 # Streamlit UI
 # ===========================
 st.title("Compare CNN Models Predictions")
@@ -75,14 +79,13 @@ if uploaded_file is not None:
 
     # Preprocess Image
     img_resized = img.resize((224, 224))
-    img_array = image.img_to_array(img_resized)
+    img_array = img_to_array(img_resized)
     img_array = np.expand_dims(img_array, axis=0) / 255.0
-    img_array = img_array.astype("float32")
 
     # Only show the button if prediction didn't happen yet
     if not st.session_state.predicted:
         if st.button("Predict"):
-            st.session_state.predicted = True  # Hide button after click
+            st.session_state.predicted = True
 
     # If prediction is done → show results
     if st.session_state.predicted:
