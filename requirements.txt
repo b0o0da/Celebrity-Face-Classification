@@ -1,0 +1,11 @@
+streamlit
+scikit-learn
+pandas
+numpy
+matplotlib
+streamlit
+tensorflow==2.15.0
+numpy
+pillow
+pandas
+huggingface-hub
