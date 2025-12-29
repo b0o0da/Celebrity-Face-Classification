@@ -33,7 +33,7 @@ for name, filename in model_files.items():
     model_path = hf_hub_download(
         repo_id=repo_id,
         filename=filename,
-        token="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"  
+        token="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"  
     )
     loaded_models[name] = load_model(model_path)
 
