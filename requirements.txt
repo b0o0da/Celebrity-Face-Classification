@@ -1,11 +1,8 @@
-streamlit
+streamlit==1.27.0
 scikit-learn
 pandas
 numpy
 matplotlib
-streamlit
-tensorflow==2.15.0
-numpy
-pillow
-pandas
+Pillow
 huggingface-hub
+tensorflow-cpu==2.15.0
