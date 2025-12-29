@@ -5,6 +5,7 @@ from tensorflow.keras.preprocessing import image
 from PIL import Image
 import pandas as pd
 from huggingface_hub import hf_hub_download
+import os
 
 # ===========================
 # Session state
