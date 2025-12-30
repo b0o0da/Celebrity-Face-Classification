@@ -62,10 +62,13 @@ if uploaded_file is not None:
     img_array = np.expand_dims(img_array, axis=0) / 255.0
 
     # Only show the button if prediction didn't happen yet
-    if not st.session_state.predicted:
-        if st.button("Predict"):
-            st.session_state.predicted = True
-            st.write("Wait For Models Predictions...............")# Hide button after click
+wait_placeholder = st.empty()
+
+if not st.session_state.predicted:
+    if st.button("Predict"):
+        wait_placeholder.info("⏳ Wait For Models Predictions...............")
+        st.session_state.predicted = True
+
 
     # If prediction is done → show results
     if st.session_state.predicted:
@@ -103,14 +106,44 @@ if uploaded_file is not None:
             unsafe_allow_html=True
         )
 
+        # ===========================
+        # Check Answer
+        # ===========================
+user_choice = st.selectbox(
+    "🧠 Who do you think this is?",
+    class_names
+)
+
+if st.button("✅ Check Answer"):
+
+    sorted_indices = np.argsort(total_probs)[::-1]
+
+    top1_class = class_names[sorted_indices[0]]
+    top2_class = class_names[sorted_indices[1]]
+    top3_class = class_names[sorted_indices[2]]
+
+    if user_choice == top1_class:
+        st.success("🎯 Model predict perfectly ✅")
+
+    elif user_choice == top2_class:
+        st.warning("⚠️ First prediction was wrong")
+        st.info(f"🔁 Second Highest Prediction is correct: **{top2_class}**")
+
+    else:
+        st.error("❌ Wrong Prediction")
+        st.info(f"🔁 Third Highest Prediction is: **{top3_class}**")
+
+        # ===========================
+        # Charts
+        # ===========================
+        st.subheader("📊 Ensemble Probabilities")
         final_df = pd.DataFrame({
             "Class": class_names,
             "Summed Probability": total_probs
         })
-        st.bar_chart(final_df.set_index("Class")["Summed Probability"])
+        st.bar_chart(final_df.set_index("Class"))
 
-        st.subheader("📊 Predictions for Each Model")
-
+        st.subheader("📈 Each Model Predictions")
         for model_name in model_predictions:
             st.write(f"### {model_name} → **{model_predictions[model_name]}**")
             model_df = results_df[results_df["Model"] == model_name]
