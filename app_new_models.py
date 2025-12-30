@@ -8,17 +8,16 @@ from huggingface_hub import hf_hub_download
 import os
 
 # ===========================
-# Session state
+# Session state defaults
 # ===========================
 if "predicted" not in st.session_state:
     st.session_state.predicted = False
+if "feedback" not in st.session_state:
+    st.session_state.feedback = None
 
 # ===========================
 # Load Models from HuggingFace
 # ===========================
-
-
-
 model_files = {
     "CNN From Scratch": "Best_Model_CNN_From_Scratch.h5",
     "CNN DenseNet169": "Best_Model_DenseNet169.h5",
@@ -28,14 +27,14 @@ model_files = {
 }
 
 repo_id = "B0o0da/Celebrity-Face-Classification"
-token = os.environ["HF_TOKEN"]
+token = os.environ["HK_TOKEN"]
 
 loaded_models = {}
 for name, filename in model_files.items():
     model_path = hf_hub_download(
         repo_id=repo_id,
         filename=filename,
-        token=token  
+        token=token
     )
     loaded_models[name] = load_model(model_path, compile=False)
 
@@ -61,18 +60,21 @@ if uploaded_file is not None:
     img_array = image.img_to_array(img_resized)
     img_array = np.expand_dims(img_array, axis=0) / 255.0
 
-    # Only show the button if prediction didn't happen yet
-wait_placeholder = st.empty()
+    # Wait placeholder
+    wait_placeholder = st.empty()
 
-if not st.session_state.predicted:
-    if st.button("Predict"):
-        wait_placeholder.info("⏳ Wait For Models Predictions...............")
-        st.session_state.predicted = True
+    if not st.session_state.predicted:
+        if st.button("Predict"):
+            wait_placeholder.info("⏳ Wait For Models Predictions...............")
+            st.session_state.predicted = True
 
-
-    # If prediction is done → show results
+    # If prediction done
     if st.session_state.predicted:
 
+
+        # ===========================
+        # Make Predictions
+        # ===========================
         model_predictions = {}
         all_preds_df = []
         total_probs = np.zeros(len(class_names))
@@ -96,55 +98,48 @@ if not st.session_state.predicted:
         final_idx = np.argmax(total_probs)
         final_class = class_names[final_idx]
 
-        st.subheader("🎯 Final Ensemble Prediction (Sum of All Models Probabilities)")
+        st.subheader("🎯 Model Prediction")
         st.markdown(
             f"""
             <h2 style='color: green; font-size: 40px; font-weight: bold;'>
-                ✅ {final_class}
+                ✅ {final_class}?
             </h2>
             """,
             unsafe_allow_html=True
         )
+        wait_placeholder.empty()
 
         # ===========================
-        # Check Answer
+        # Check Answer Buttons
         # ===========================
-user_choice = st.selectbox(
-    "🧠 Who do you think this is?",
-    class_names
-)
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("✅ Yes, Correct"):
+                st.session_state.feedback = "yes"
+        with col2:
+            if st.button("❌ No, Wrong"):
+                st.session_state.feedback = "no"
 
-if st.button("✅ Check Answer"):
+        # Persist feedback
+        if st.session_state.feedback == "yes":
+            st.success("🎯 Model predicted perfectly!")
+            st.subheader("📊 Ensemble Probabilities")
+            final_df = pd.DataFrame({
+                "Class": class_names,
+                "Summed Probability": total_probs
+            })
+            st.bar_chart(final_df.set_index("Class"))
 
-    sorted_indices = np.argsort(total_probs)[::-1]
+            st.subheader("📈 Each Model Predictions")
+            for model_name in model_predictions:
+                st.write(f"### {model_name} → **{model_predictions[model_name]}**")
+                model_df = results_df[results_df["Model"] == model_name]
+                st.bar_chart(model_df.set_index("Class")["Probability"])
+                
+        if st.session_state.feedback == "no":
+            sorted_indices = np.argsort(total_probs)[::-1]
+            st.error("❌ First prediction was wrong")
+            st.info(f"🔁 Second Highest Prediction: **{class_names[sorted_indices[1]]}**")
+            st.info(f"🔁 Third Highest Prediction: **{class_names[sorted_indices[2]]}**")
 
-    top1_class = class_names[sorted_indices[0]]
-    top2_class = class_names[sorted_indices[1]]
-    top3_class = class_names[sorted_indices[2]]
 
-    if user_choice == top1_class:
-        st.success("🎯 Model predict perfectly ✅")
-
-    elif user_choice == top2_class:
-        st.warning("⚠️ First prediction was wrong")
-        st.info(f"🔁 Second Highest Prediction is correct: **{top2_class}**")
-
-    else:
-        st.error("❌ Wrong Prediction")
-        st.info(f"🔁 Third Highest Prediction is: **{top3_class}**")
-
-        # ===========================
-        # Charts
-        # ===========================
-        st.subheader("📊 Ensemble Probabilities")
-        final_df = pd.DataFrame({
-            "Class": class_names,
-            "Summed Probability": total_probs
-        })
-        st.bar_chart(final_df.set_index("Class"))
-
-        st.subheader("📈 Each Model Predictions")
-        for model_name in model_predictions:
-            st.write(f"### {model_name} → **{model_predictions[model_name]}**")
-            model_df = results_df[results_df["Model"] == model_name]
-            st.bar_chart(model_df.set_index("Class")["Probability"])
