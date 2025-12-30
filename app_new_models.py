@@ -10,6 +10,9 @@ import os
 # ===========================
 # Session state defaults
 # ===========================
+
+output_placeholder = st.empty()
+
 if "predicted" not in st.session_state:
     st.session_state.predicted = False
 if "feedback" not in st.session_state:
@@ -64,9 +67,12 @@ if uploaded_file is not None:
     wait_placeholder = st.empty()
 
     if not st.session_state.predicted:
-        if st.button("Predict"):
+        if st.button("Predict") and uploaded_file is not None:
+            output_placeholder.empty()
             wait_placeholder.info("⏳ Wait For Models Predictions...............")
             st.session_state.predicted = True
+        else:
+            st.write("Please Upload Image")
 
     # If prediction done
     if st.session_state.predicted:
