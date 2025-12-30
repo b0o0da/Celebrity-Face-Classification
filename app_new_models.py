@@ -27,7 +27,7 @@ model_files = {
 }
 
 repo_id = "B0o0da/Celebrity-Face-Classification"
-token = os.environ["HK_TOKEN"]
+token = os.environ["HF_TOKEN"]
 
 loaded_models = {}
 for name, filename in model_files.items():
