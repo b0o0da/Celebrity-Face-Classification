@@ -42,13 +42,13 @@ for name, filename in model_files.items():
 # ===========================
 # Class names
 # ===========================
-class_names = ["Alexgender", "Amitab Bachchan", "Billie Eilish", "Brad Pitt", "Camila Cabello"]
+class_names = ["Alexandra Daddario", "Amitab Bachchan", "Billie Eilish", "Brad Pitt", "Camila Cabello"]
 
 # ===========================
 # Streamlit UI
 # ===========================
 st.title("Compare CNN Models Predictions")
-st.write("Upload an image of Alexgender, Amitab Bachchan, Billie Eilish, Brad Pitt, or Camila Cabello.")
+st.write("Upload an image of Alexandra Daddario, Amitab Bachchan, Billie Eilish, Brad Pitt, or Camila Cabello.")
 
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
 
