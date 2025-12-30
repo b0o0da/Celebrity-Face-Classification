@@ -6,3 +6,4 @@ matplotlib
 Pillow
 huggingface-hub
 tensorflow-cpu==2.15.0
+keras==2.12.0

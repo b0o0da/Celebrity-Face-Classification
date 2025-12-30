@@ -37,7 +37,7 @@ for name, filename in model_files.items():
         filename=filename,
         token=token  
     )
-    loaded_models[name] = load_model(model_path)
+    loaded_models[name] = load_model(model_path, compile=False)
 
 # ===========================
 # Class names
