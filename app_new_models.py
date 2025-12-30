@@ -71,8 +71,7 @@ if uploaded_file is not None:
             output_placeholder.empty()
             wait_placeholder.info("⏳ Wait For Models Predictions...............")
             st.session_state.predicted = True
-        else:
-            st.write("Please Upload Image")
+
 
     # If prediction done
     if st.session_state.predicted:
