@@ -64,7 +64,8 @@ if uploaded_file is not None:
     # Only show the button if prediction didn't happen yet
     if not st.session_state.predicted:
         if st.button("Predict"):
-            st.session_state.predicted = True  # Hide button after click
+            st.session_state.predicted = True
+            st.write("Wait For Models Predictions...............")# Hide button after click
 
     # If prediction is done → show results
     if st.session_state.predicted:
